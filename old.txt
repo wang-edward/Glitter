@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.5)
 project(Glitter)
 
 option(GLFW_BUILD_DOCS OFF)
@@ -17,6 +17,8 @@ option(BUILD_EXTRAS OFF)
 option(BUILD_OPENGL3_DEMOS OFF)
 option(BUILD_UNIT_TESTS OFF)
 add_subdirectory(Glitter/Vendor/bullet)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
@@ -42,21 +44,23 @@ file(GLOB PROJECT_SHADERS Glitter/Shaders/*.comp
                           Glitter/Shaders/*.frag
                           Glitter/Shaders/*.geom
                           Glitter/Shaders/*.vert)
+file(GLOB PROJECT_ASSETS Glitter/Assets/*) # add assets
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
                          .gitattributes
                          .gitignore
                          .gitmodules)
 
-source_group("Headers" FILES ${PROJECT_HEADERS})
-source_group("Shaders" FILES ${PROJECT_SHADERS})
-source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("Vendors" FILES ${VENDORS_SOURCES})
+source_group("Headers" FILES ${PROJECT_HEADERS})
+source_group("Sources" FILES ${PROJECT_SOURCES})
+source_group("Shaders" FILES ${PROJECT_SHADERS})
+source_group("Assets"  FILES ${PROJECT_ASSETS})
 
 add_definitions(-DGLFW_INCLUDE_NONE
                 -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES} ${PROJECT_HEADERS}
-                               ${PROJECT_SHADERS} ${PROJECT_CONFIGS}
+                               ${PROJECT_SHADERS} ${PROJECT_CONFIGS} ${PROJECT_ASSETS}
                                ${VENDORS_SOURCES})
 target_link_libraries(${PROJECT_NAME} assimp glfw
                       ${GLFW_LIBRARIES} ${GLAD_LIBRARIES}
@@ -64,8 +68,25 @@ target_link_libraries(${PROJECT_NAME} assimp glfw
 set_target_properties(${PROJECT_NAME} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${PROJECT_NAME})
 
+# file( COPY ${CMAKE_SOURCE_DIR}/Glitter/Shaders DESTINATION ${CMAKE_BINARY_DIR} )
+# file( COPY ${CMAKE_SOURCE_DIR}/Glitter/Assets DESTINATION ${CMAKE_BINARY_DIR} )
+# message("PRINTED")
+
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Glitter/Shaders $<TARGET_FILE_DIR:${PROJECT_NAME}>
-    DEPENDS ${PROJECT_SHADERS})
+    DEPENDS ${PROJECT_SHADERS}
+    )
+
+add_custom_command(
+    TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Glitter/Assets $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    DEPENDS ${PROJECT_ASSETS}
+    )
+
+# add_custom_target(copy_assets
+# COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Glitter/Shaders $<TARGET_FILE_DIR:${PROJECT_NAME}>
+# )
+
+# add_dependencies(${PROJECT_NAME})
 

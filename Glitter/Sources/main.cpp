@@ -15,6 +15,8 @@ void processInput(GLFWwindow *window);
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
+float mixAmt = 0.5f;
+
 int main()
 {
     // glfw: initialize and configure
@@ -90,6 +92,7 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);  
 
+    stbi_set_flip_vertically_on_load(true);  
     // TEXTURE 1
     // ------------------------------------------------------------------
     unsigned int texture1;
@@ -98,8 +101,8 @@ int main()
     // set the texture wrapping/filtering options (on the currently bound texture object)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     // load and generate the texture
     int width, height, nrChannels;
     unsigned char *data = stbi_load("Glitter/container.jpg", &width, &height, &nrChannels, 0);
@@ -128,7 +131,6 @@ int main()
     }
     stbi_image_free(data);
 
-    stbi_set_flip_vertically_on_load(true);  
     
     ourShader.use();
     glUniform1i(glGetUniformLocation(ourShader.ID, "texture1"), 0);
@@ -151,6 +153,8 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
+
+        ourShader.setFloat("mixAmt", mixAmt);
 
         ourShader.use();
         // bind textures
@@ -176,12 +180,27 @@ int main()
     return 0;
 }
 
+float clamp(float x) {
+    if (x < 0) return 0.0f;
+    if (x > 1) return 1.0f;
+    return x;
+}
+
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        std::cout << "up" << std::endl;
+        mixAmt = clamp(mixAmt + 0.001f);
+        std::cout << "mixAmt: " << mixAmt << std::endl;
+        } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        mixAmt = clamp(mixAmt - 0.001f);
+        std::cout << "down" << std::endl;
+    }
+    // std::cout << "mixAmt: " << mixAmt << std::endl;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
