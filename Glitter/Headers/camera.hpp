@@ -76,6 +76,7 @@ public:
             Position -= Right * velocity;
         if (direction == RIGHT)
             Position += Right * velocity;
+        Position.y = 0;
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
@@ -103,8 +104,8 @@ public:
         Zoom -= (float)yoffset;
         if (Zoom < 1.0f)
             Zoom = 1.0f;
-        if (Zoom > 45.0f)
-            Zoom = 45.0f;
+        if (Zoom > 103.0f)
+            Zoom = 103.0f;
     }
 
 private:
