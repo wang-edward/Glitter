@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 project(Glitter)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(GLFW_BUILD_DOCS OFF)
 option(GLFW_BUILD_EXAMPLES OFF)
@@ -21,7 +22,7 @@ add_subdirectory(Glitter/Vendor/bullet)
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -g -Wextra -Wpedantic -std=c++11")
     if(NOT WIN32)
         set(GLAD_LIBRARIES dl)
     endif()
@@ -42,7 +43,10 @@ file(GLOB PROJECT_ASSETS  Glitter/Assets/*)
 file(GLOB PROJECT_SHADERS Glitter/Shaders/*.comp
                           Glitter/Shaders/*.frag
                           Glitter/Shaders/*.geom
-                          Glitter/Shaders/*.vert)
+                          Glitter/Shaders/*.vert
+                          Glitter/Shaders/*.vs
+                          Glitter/Shaders/*.fs)
+                    
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
                          .gitattributes

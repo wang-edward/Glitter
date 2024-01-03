@@ -1,5 +1,3 @@
-
-
 #ifndef CAMERA_H
 #define CAMERA_H
 
@@ -10,11 +8,13 @@
 #include <vector>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
-enum Camera_Movement {
+enum CameraMovement {
     FORWARD,
     BACKWARD,
     LEFT,
-    RIGHT
+    RIGHT,
+    UP,
+    DOWN
 };
 
 // Default camera values
@@ -26,8 +26,7 @@ const float ZOOM        =  45.0f;
 
 
 // An abstract camera class that processes input and calculates the corresponding Euler Angles, Vectors and Matrices for use in OpenGL
-class Camera
-{
+class Camera {
 public:
     // camera Attributes
     glm::vec3 Position;
@@ -66,7 +65,7 @@ public:
     }
 
     // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-    void ProcessKeyboard(Camera_Movement direction, float deltaTime) {
+    void ProcessKeyboard(CameraMovement direction, float deltaTime) {
         float velocity = MovementSpeed * deltaTime;
         if (direction == FORWARD)
             Position += Front * velocity;
@@ -76,7 +75,26 @@ public:
             Position -= Right * velocity;
         if (direction == RIGHT)
             Position += Right * velocity;
-        Position.y = 0;
+        switch (direction) {
+            case CameraMovement::FORWARD:
+                Position += Front * velocity;
+                break;
+            case CameraMovement::BACKWARD:
+                Position -= Front * velocity;
+                break;
+            case CameraMovement::LEFT:
+                Position -= Right * velocity;
+                break;
+            case CameraMovement::RIGHT:
+                Position += Right * velocity;
+                break;
+            case CameraMovement::UP:
+                Position += Up * velocity;
+                break;
+            case CameraMovement::DOWN:
+                Position -= Up * velocity;
+                break;
+        }
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
