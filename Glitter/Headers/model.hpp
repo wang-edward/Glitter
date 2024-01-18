@@ -32,6 +32,7 @@ public:
     vector<Mesh>    meshes;
     string directory;
     bool gammaCorrection;
+    glm::mat4 modelMatrix;
 
     // constructor, expects a filepath to a 3D model.
     Model(string const &path, bool gamma = false) : gammaCorrection(gamma)
@@ -42,6 +43,7 @@ public:
     // draws the model, and thus all its meshes
     void Draw(Shader &shader)
     {
+        shader.setMat4("model", modelMatrix);
         for(unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }

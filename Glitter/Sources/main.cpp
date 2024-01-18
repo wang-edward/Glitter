@@ -17,8 +17,8 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_WIDTH = 1920;
+const unsigned int SCR_HEIGHT = 1080;
 
 // camera
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
@@ -68,7 +68,7 @@ int main() {
     }
 
     // tell stb_image.h to flip loaded texture's on the y-axis (before loading model).
-    stbi_set_flip_vertically_on_load(true);
+    // stbi_set_flip_vertically_on_load(true);
 
     // configure global opengl state
     // -----------------------------
@@ -81,16 +81,45 @@ int main() {
     // load models
     // -----------
     // Model ourModel("chess/King.obj");
-    Model ourModel("wKnight/12930_WoodenChessKnightSideA_v1_l3.obj");
+    
+    glm::mat4 model = glm::mat4(1.0f);
+    // model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
+    model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));	// it's a bit too big for our scene, so scale it down
+    // model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+
+    Model board("board.obj");
+    Model wKing("w_king.obj");
+    Model wQueen("w_queen.obj");
+    Model wBishop("w_bishop.obj");
+    Model wKnight("w_knight.obj");
+    Model wRook("w_rook.obj");
+    Model wPawn("w_pawn.obj");
+
+    Model bKing("b_king.obj");
+    Model bQueen("b_queen.obj");
+    Model bBishop("b_bishop.obj");
+    Model bKnight("b_knight.obj");
+    Model bRook("b_rook.obj");
+    Model bPawn("b_pawn.obj");
+    board.modelMatrix = model;
+    // model = glm::translate(model, glm::vec3(-1.0f, 0.0f, -2.0f));
+    wKing.modelMatrix = model;
+    wQueen.modelMatrix = model;
+    wBishop.modelMatrix = model;
+    wKnight.modelMatrix = model;
+    wPawn.modelMatrix = model;
+
+    bKing.modelMatrix = model;
+    bQueen.modelMatrix = model;
+    bBishop.modelMatrix = model;
+    bKnight.modelMatrix = model;
+    bRook.modelMatrix = model;
+    bPawn.modelMatrix = model;
 
     
     // draw in wireframe
     // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f)); // translate it down so it's at the center of the scene
-    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));	// it's a bit too big for our scene, so scale it down
     ourShader.use();
     ourShader.setMat4("model", model);
 
@@ -122,9 +151,20 @@ int main() {
         ourShader.setMat4("view", view);
 
         // render the loaded model
-        ourModel.Draw(ourShader);
-        std::cout << ourModel.meshes.size() << std::endl;
-
+        board.Draw(ourShader);
+        wKing.Draw(ourShader);
+        wQueen.Draw(ourShader);
+        wBishop.Draw(ourShader);
+        wKnight.Draw(ourShader);
+        wRook.Draw(ourShader);
+        wPawn.Draw(ourShader);
+        
+        bKing.Draw(ourShader);
+        bQueen.Draw(ourShader);
+        bBishop.Draw(ourShader);
+        bKnight.Draw(ourShader);
+        bRook.Draw(ourShader);
+        bPawn.Draw(ourShader);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -154,7 +194,7 @@ void processInput(GLFWwindow *window) {
         camera.ProcessKeyboard(CameraMovement::RIGHT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         camera.ProcessKeyboard(CameraMovement::UP, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         camera.ProcessKeyboard(CameraMovement::DOWN, deltaTime);
 }
 

@@ -89,10 +89,10 @@ public:
                 Position += Right * velocity;
                 break;
             case CameraMovement::UP:
-                Position += Up * velocity;
+                Position += glm::vec3(0.0, 1.0, 0.0) * velocity;
                 break;
             case CameraMovement::DOWN:
-                Position -= Up * velocity;
+                Position -= glm::vec3(0.0, 1.0, 0.0) * velocity;
                 break;
         }
     }
